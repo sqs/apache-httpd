@@ -403,8 +403,6 @@ static char *ssl_var_lookup_ssl(apr_pool_t *p, conn_rec *c, request_rec *r,
     return result;
 }
 
-/* TODO(sqs): add to default httpd-ssl.conf, and add docs about SRP cipher suites */
-
 static char *ssl_var_lookup_ssl_cert_dn_oneline(apr_pool_t *p, request_rec *r,
                                                 X509_NAME *xsname)
 {

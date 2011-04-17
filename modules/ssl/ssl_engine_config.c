@@ -270,7 +270,6 @@ static void modssl_ctx_cfg_merge(modssl_ctx_t *base,
 #ifndef OPENSSL_NO_SRP
     cfgMergeString(srp_vfile);
     cfgMergeString(srp_unknown_user_seed);
-    cfgMerge(srp_vbase, NULL); /* TODO(sqs): should merge this? patch doesn't. */
 #endif
 }
 

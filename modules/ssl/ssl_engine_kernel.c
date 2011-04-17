@@ -359,7 +359,7 @@ int ssl_hook_Access(request_rec *r)
      */
     if (SSL_get_srp_username(ssl)) {
         return DECLINED;
-    } /* TODO(sqs): what does this do? */
+    }
 #endif
 
     /*
