@@ -349,6 +349,19 @@ int ssl_hook_Access(request_rec *r)
         return DECLINED;
     }
 
+#ifndef OPENSSL_NO_SRP
+    /*
+     * Support for per-directory reconfigured SSL connection parameters
+     *
+     * We do not force any renegotiation if the user is already authenticated
+     * via SRP.
+     *
+     */
+    if (SSL_get_srp_username(ssl)) {
+        return DECLINED;
+    } /* TODO(sqs): what does this do? */
+#endif
+
     /*
      * Support for per-directory reconfigured SSL connection parameters.
      *
@@ -1103,6 +1116,10 @@ static const char *ssl_hook_Fixup_vars[] = {
     "SSL_SERVER_A_SIG",
     "SSL_SESSION_ID",
     "SSL_SESSION_RESUMED",
+#ifndef OPENSSL_NO_SRP
+    "SSL_SRP_USER",
+    "SSL_SRP_USERINFO",
+#endif
     NULL
 };
 
@@ -2255,4 +2272,30 @@ static int ssl_find_vhost(void *servername, conn_rec *c, server_rec *s)
 
     return 0;
 }
-#endif
+
+#endif /* OPENSSL_NO_TLSEXT */
+
+#ifndef OPENSSL_NO_SRP
+
+int ssl_callback_SRPServerParams(SSL *ssl, int *ad, void *arg)
+{
+    modssl_ctx_t *mctx = (modssl_ctx_t *)arg;
+    char *username = SSL_get_srp_username(ssl);
+    SRP_user_pwd *u;
+
+    if ((u = SRP_VBASE_get_by_user(mctx->srp_vbase, username)) == NULL) {
+        *ad = SSL_AD_UNKNOWN_PSK_IDENTITY;
+        return SSL3_AL_FATAL;
+    }
+
+    if (SSL_set_srp_server_param(ssl, u->N, u->g, u->s, u->v, u->info) < 0) {
+        *ad = SSL_AD_INTERNAL_ERROR;
+        return SSL3_AL_FATAL;
+    }
+
+    /* reset all other options */
+    SSL_set_verify(ssl, SSL_VERIFY_NONE,  ssl_callback_SSLVerify);
+    return SSL_ERROR_NONE;
+}
+
+#endif /* OPENSSL_NO_SRP */

@@ -523,6 +523,12 @@ typedef struct {
     const char *stapling_force_url;
 #endif
 
+#ifndef OPENSSL_NO_SRP
+    char *srp_vfile;
+    char *srp_unknown_user_seed;
+    SRP_VBASE  *srp_vbase;
+#endif
+
     modssl_auth_ctx_t auth;
 
     BOOL ocsp_enabled; /* true if OCSP verification enabled */
@@ -641,6 +647,11 @@ const char *ssl_cmd_SSLOCSPResponseMaxAge(cmd_parms *cmd, void *dcfg, const char
 const char *ssl_cmd_SSLOCSPResponderTimeout(cmd_parms *cmd, void *dcfg, const char *arg);
 const char *ssl_cmd_SSLOCSPEnable(cmd_parms *cmd, void *dcfg, int flag);
 
+#ifndef OPENSSL_NO_SRP
+const char *ssl_cmd_SSLSRPVerifierFile(cmd_parms *cmd, void *dcfg, const char *arg);
+const char *ssl_cmd_SSLSRPUnknownUserSeed(cmd_parms *cmd, void *dcfg, const char *arg);
+#endif
+
 const char *ssl_cmd_SSLFIPS(cmd_parms *cmd, void *dcfg, int flag);
 
 /**  module initialization  */
@@ -681,6 +692,9 @@ void         ssl_callback_DelSessionCacheEntry(SSL_CTX *, SSL_SESSION *);
 void         ssl_callback_Info(MODSSL_INFO_CB_ARG_TYPE, int, int);
 #ifndef OPENSSL_NO_TLSEXT
 int          ssl_callback_ServerNameIndication(SSL *, int *, modssl_ctx_t *);
+#endif
+#ifndef OPENSSL_NO_SRP
+int          ssl_callback_SRPServerParams(SSL *, int *, void *);
 #endif
 
 /**  Session Cache Support  */

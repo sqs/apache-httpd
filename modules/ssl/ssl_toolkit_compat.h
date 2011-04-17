@@ -57,6 +57,14 @@
 #define OPENSSL_NO_EC
 #endif
 
+/* SRP support came in OpenSSL 1.0.1 */
+#if (OPENSSL_VERSION_NUMBER < 0x10001000)
+#define OPENSSL_NO_SRP
+#endif
+#ifndef OPENSSL_NO_SRP
+#include <openssl/srp.h>
+#endif
+
 /** Avoid tripping over an engine build installed globally and detected
  * when the user points at an explicit non-engine flavor of OpenSSL
  */
