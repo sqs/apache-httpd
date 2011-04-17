@@ -702,6 +702,28 @@ HTTPS to an Apache+mod_ssl server with Microsoft Internet Explorer (MSIE)?</titl
     or otherwise.</p>
 </section>
 
+<section id="srp"><title>How do I enable TLS-SRP?</title>
+<p>TLS-SRP (Secure Remote Password key exchange for TLS, specified in RFC 5054)
+    can supplement or replace certificates in authenticating an SSL connection.
+    To use TLS-SRP, set the
+    <directive module="mod_ssl">SSLSRPVerifierFile</directive> directive to
+    point to an OpenSSL SRP verifier file. To create the verifier file, use the
+    <code>openssl</code> tool:
+    <example>
+    openssl srp -srpvfile passwd.srpv -add username
+    </example>
+    After creating this file, specify it in the SSL server configuration:
+    <example>
+    SSLSRPVerifierFile /path/to/passwd.srpv
+    </example>
+    To force clients to use non-certificate TLS-SRP cipher suites, use the
+    following directive:
+    <example>
+    SSLCipherSuite "!DSS:!aRSA:SRP"
+    </example>
+</p>
+</section>
+
 </section>
 <!-- /aboutssl -->
 
